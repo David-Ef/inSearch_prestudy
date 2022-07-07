@@ -1,0 +1,214 @@
+
+body{
+	min-width: 1000px;
+}
+
+div#cont-cont {
+	margin-top: 40px;
+	position: absolute;
+	width: 100%;
+	height: calc(60vw * (2/3) + 19px);
+}
+
+div#cont-VP {
+	position: absolute;
+	left: 5px;
+	top: 5px;
+
+	width: 60%;
+	height: calc(60vw * (2/3));
+
+	padding: 5px;
+
+	border: 2px solid black;
+	background-color: white;
+}
+
+div#cont-EquirectView {
+	position: absolute;
+	left: calc(60% + 17px);
+	/*top: calc(260px + 20px);*/
+	bottom: 0px;
+
+	/*margin-left: 5%;*/
+
+	width: calc( (50vw * (2/3) - 275px) *2);
+	height: calc(50vw * (2/3) - 275px);
+
+	width: 512px;
+	height: 256px;
+
+	max-width: 600px;
+	max-height: 300px;
+
+	padding: 5px;
+	padding-left: 0px;
+
+	border: 2px solid black;
+	border-left: 0px solid white;
+	background-color: white;
+}
+
+div#cont-Info {
+	position: absolute;
+	left: calc(60% + 17px);
+	/*top: calc(260px + 20px);*/
+	bottom: 268px;
+
+	/*margin-left: 5%;*/
+
+	/*width: calc( (50vw * (2/3) - 275px) *2);*/
+	height: 20px;
+
+	max-width: 600px;
+	max-height: 300px;
+
+	padding: 5px;
+	padding-left: 10px;
+
+	border: 2px solid black;
+	border-left: 0px solid white;
+	border-bottom: 0px solid white;
+	background-color: white;
+}
+
+div#cont-ObjView {
+	position: absolute;
+	left: calc(60% + 20px);
+	top: 5px;
+
+	width: 324px;
+	height: 324px;
+/*
+	widht: 40%;
+	height: 40w;*/
+
+	padding: 5px;
+
+	border: 2px solid black;
+	background-color: white;
+/*
+	align-content: center;
+	align-items: center;*/
+}
+
+div#cont-ObjView > #vid-name {
+	position:absolute;
+	top:5px;
+	left:5px;
+	z-index:1;
+}
+
+video {
+	max-width: 320px;
+	max-height: 320px;
+}
+
+div#cont-ObjView > video {
+  margin: 0;
+  position: absolute;
+
+  top: 50%;
+  left: 50%;
+
+  width: 95%;
+
+  z-index:0;
+
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+span#DotValid {
+	position: fixed;
+	left: 400px;
+	top: 300px;
+
+	padding: 10px;
+	background-color: red;
+	border: 2px solid black;
+	border-radius: 2px;
+}
+
+.no-close .ui-dialog-titlebar-close {
+  display: none;
+}
+
+/* https://www.w3schools.com/howto/howto_js_rangeslider.asp */
+.slider::-moz-range-thumb {
+	width: 10px;
+	height: 30px;
+	border: 0;
+	background: #424242;
+	cursor: pointer;
+}
+.slider::-webkit-slider-thumb {
+	width: 10px;
+	height: 30px;
+	border: 0;
+	background: #424242;
+	cursor: pointer;
+}
+
+.slider:hover {
+	opacity: 1;
+}
+
+.slider {
+	cursor: pointer;
+	-webkit-appearance: none;
+	width: 100%;
+	height: 10px;
+	background: #d3d3d3;
+	outline: none;
+	opacity: .7;
+}
+
+.pink-filled-dot {
+	width: 10px;
+	height: 10px;
+	background-color: rgb(226,0,240);
+	border-radius: 50%;
+}
+
+.red-empty-rect {
+	border-radius: 5%;
+	border-color: red;
+	border-width: 5px;
+}
+
+.grey-filled-rect {
+	background-color: grey;
+}
+
+.white-overlay-rect {
+	position: absolute;
+	background-color: rgba(255,255,255,.5);
+
+	text-align: center;
+	vertical-align: middle;
+
+	font-weight: bold;
+	font-size: 20px;
+}
+
+#fill-scene-type {
+	font-weight: bold;
+}
+
+.stacked-images {
+	width: 100%;
+	position: relative;
+}
+
+.stacked-images > img {
+	position: absolute;
+	width: 100%;
+	top: 0px;
+	left: 0px;
+}
+
+.stacked-images :nth-child(1) {
+	position: relative;
+	width: 100%;
+}
