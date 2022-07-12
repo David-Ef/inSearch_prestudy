@@ -24,6 +24,8 @@
 	"btn.rejt": "Ablehnen",
 	"btn.lab": "Wähle ein Label",
 	"btn.nxsc": "Nächste Szene",
+	"btn.yes": "Ya",
+	"btn.no": "Nein",
 	"expedesc.title": "Beschreibung der Studie",
 	"expedesc.content1": "In diesem Experiment haben sollen Sie Objekte in Szenen platzieren. Ziel des Experiments ist es, typische Orte von Gegenständen zu ermitteln und festzustellen, ob sie eher im Inneren (z. B. in einer Schublade) oder außerhalb (z. B. auf dem Tisch) zu finden sind. Das Experiment dauert etwa 40 Minuten.<br/><br/>Die Szenen sind Innenräume (Schlafzimmer, Küche, Wohnzimmer und Büro), die Gegenstände sind Objekte, die man in einer Wohnung finden kann (z. B. Regenschirm, Locher).<br/><br/>Die gesammelten Daten werden für eine zukünftige Studie benötigt, in der diese Objekte in den Szenen platziert werden müssen. Ihre Antworten sind daher sehr wichtig für uns.<br/><br/>Gleich werden wir Ihnen genauere Anweisungen für das Experiment geben. Vorher werden wir noch ein paar Dinge überprüfen und abfragen.<br/><br/>Click \"<b>${}</b>\".",
 	"expedesc.content2": "<b>Bitte machen Sie das Experiment nur auf einem Laptop oder Computer mit mindestens 13 Zoll Bildschirmdiagonale (33cm). Verwenden Sie kein Telefon oder Tablet.</b><br/ ><br/ > <b>Versuchen Sie bitte mindestens 50 cm vom Bildschirm entfernt und in aufrechter Position zu sitzen.</b><br/ ><br/ > Sie werden etwa <b>${}</b> Minuten benötigen, um die Studie zu absolvieren (inkl. Pausen und Instruktionen). Stellen Sie sicher, dass Sie genügend Zeit für das Experiment haben oder starten Sie das Experiment zu einem anderen Zeitpunkt. <br /> Versuchen Sie bitte die Aufgaben so gut wie möglich durchzuführen. <br /><br /> Für die vollständige Teilnahme an dem Experiment erhalten Sie 60 Versuchspersonenminuten.",
