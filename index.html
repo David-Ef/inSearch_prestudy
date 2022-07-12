@@ -168,7 +168,7 @@ import * as Questionnaire from "./src/Questionnaire.js";
 
     sceneMngr_VP.ExtCanvasClickClbk = (scenemngr) => {
 
-      const modalData = new ModalData(null, localise.get("question0"), [localise.get("btn.yes"), localise.get("btn.no")], onModalCloseClbk, "200");
+      const modalData = new ModalData(null, localise.get("question0"), [localise.get("btn.yes"), localise.get("btn.no")], onModalCloseClbk, "300");
       const modal = new Modal(modalData);
       modal.build().show({my: "left", at: "right", of: "#DotValid"});
       $("#DotValid").hide();
@@ -603,7 +603,8 @@ import * as Questionnaire from "./src/Questionnaire.js";
         $("#DotValid").removeClass("used");
       })
       .waitForAnswer(
-        new ModalData(localise.get("question.title", 1,3), localise.get("question1"))
+        new ModalData(localise.get("question.title", 1,3), localise.get("question1"),
+          [localise.get("btn.inside"), localise.get("btn.outside")])
       )
       .waitForAnswer(
         new Questionnaire.ContinuousScale(

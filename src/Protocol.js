@@ -206,12 +206,17 @@ class Trial{
 	}
 
 	waitForAnswer(modalData){
-		if (!(modalData instanceof ModalData)) {
+		if (!(modalData instanceof ModalData) && !(modalData instanceof Modal)) {
 			console.error("Value of parameter (modalData) passed to Trial.waitForAnswer must be an instance of ModalData")
 			return null;
 		}
 
-		const modal = new Modal(modalData);
+		let modal;
+		if(modalData instanceof ModalData){
+			modal = new Modal(modalData);
+		} else {
+			modal = modalData;
+		}
 
 		this.lambda(() => {modal.build().show();}, "Show modal with choice")
 			.waitUntil(() => {return !modal.isUp;});
