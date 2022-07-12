@@ -158,7 +158,7 @@ class LineAnswer extends TextAnswer{
 
         const _after_build_callback = (modal) => {
             function setButtonEnabled(bool){
-                $(`button:contains("Accept")`)
+                $(`button:contains("${window.localise.get("btn.acpt")}")`)
                   .prop("disabled", !bool)
                   .css("color", bool?"black":"gray");
             }
@@ -175,7 +175,7 @@ class LineAnswer extends TextAnswer{
             }
         };
 
-        return new ModalWrapper(this, title, ["Accept"], _after_build_callback);
+        return new ModalWrapper(this, title, [window.localise.get("btn.acpt")], _after_build_callback);
     }
 }
 
@@ -283,7 +283,7 @@ class MultipleChoiceImage extends ChoiceItem{
 
         const _after_build_callback = (modal) => {
             function setButtonEnabled(bool){
-                $(`button:contains("Accept")`)
+                $(`button:contains("${window.localise.get("btn.acpt")}")`)
                   .prop("disabled", !bool)
                   .css("color", bool?"black":"gray");
             }
@@ -316,7 +316,7 @@ class MultipleChoiceImage extends ChoiceItem{
             }
         };
 
-        return new ModalWrapper(this, title, ["Accept"], _after_build_callback, 1000);
+        return new ModalWrapper(this, title, [window.localise.get("btn.acpt")], _after_build_callback, 1000);
     }
 }
 
@@ -374,7 +374,7 @@ class UniqueChoice extends ChoiceItem{
     asModalData(title=""){
 
         function setButtonEnabled(bool){
-        $(`button:contains("Accept")`)
+        $(`button:contains("${window.localise.get("btn.acpt")}")`)
           .prop("disabled", !bool)
           .css("color", bool?"black":"gray");
         }
@@ -395,7 +395,7 @@ class UniqueChoice extends ChoiceItem{
             }
         };
 
-        return new ModalWrapper(this, title, ["Accept"], after_build_callback);
+        return new ModalWrapper(this, title, [window.localise.get("btn.acpt")], after_build_callback);
     }
 }
 
@@ -431,7 +431,7 @@ class Scale extends BaseQuestItem{
 
     asModalData(title="", after_build_callback=null){
 
-        return new ModalWrapper(this, title, ["Accept"], after_build_callback);
+        return new ModalWrapper(this, title, [window.localise.get("btn.acpt")], after_build_callback);
     }
 }
 
@@ -468,7 +468,7 @@ class DiscreteScale extends Scale{
             });
         };
 
-        return new ModalWrapper(this, title, ["Accept"], after_build_callback);
+        return new ModalWrapper(this, title, [window.localise.get("btn.acpt")], after_build_callback);
     }
 }
 
