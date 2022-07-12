@@ -11,7 +11,7 @@ import { DataMngr } from "./DataMngr.js";
 class ModalData{
 	constructor(title=null,
 				content=null,
-				choices=["Yes", "No"],
+				choices=[window.localise.get("btn.yes"), window.localise.get("btn.no")],
 				callback=null,
 				width=null,
 				after_build_callback=null
