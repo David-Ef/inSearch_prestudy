@@ -8,8 +8,8 @@
 				"contact_lens_holder": "Kontaktlinsenbehälter",
 				"eyeglasses_case": "Brillenetui",
 				"game_console": "Spielkonsole",
-				"hairbrush": "Hair brush",
-				"handbrush": "Haarbürste",
+				"hairbrush": "Haarbürste",
+				"handbrush": "Handbürste",
 				"jewellery": "Schmuck",
 				"gameboard": "Spielbrett",
 				"local_object_B_book2": "Buch",
@@ -33,7 +33,7 @@
 				"portable_game_system": "Tragbares Spielsystem",
 				"sock": "Socken",
 				"wicker_basket": "Korb",
-				"scale": "scale"
+				"scale": "Maßstab"
 			}
 		],
 		[
@@ -123,13 +123,13 @@
 				"lightbulb": "Glühbirne",
 				"local_object_B_computermouse": "Computermaus",
 				"local_object_B_keyboard": "Tastatur",
-				"local_object_B_organizer&booklet": "Organiser mit Heft",
+				"local_object_B_organizer&booklet": "Aufbewahrungsbox mit Heft",
 				"local_object_K_book": "Buch",
 				"local_object_O_cardholder": "Planer",
 				"local_object_O_croissant": "Croissant",
 				"local_object_O_folder": "Ordner",
-				"local_object_O_Kettle": "Kettle",
-				"local_object_O_organizer": "Organiser",
+				"local_object_O_Kettle": "Wasserkocher",
+				"local_object_O_organizer": "Aufbewahrungsbox",
 				"local_object_O_paper": "Papierstapel",
 				"local_object_O_pen": "Stift",
 				"local_object_O_printer": "Drucker",
