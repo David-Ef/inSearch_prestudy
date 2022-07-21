@@ -49,8 +49,10 @@ class Localise{
 		});
 	}
 
-	get(key){
+	get(key, return_null_on_missing=false){
 		if ( !(key in this.dict) ){
+			if (return_null_on_missing) return null;
+
 			return "MISSING_KEY: " + key;
 		}
 

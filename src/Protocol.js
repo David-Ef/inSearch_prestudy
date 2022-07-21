@@ -207,7 +207,7 @@ class Trial{
 
 	waitForAnswer(modalData){
 		if (!(modalData instanceof ModalData) && !(modalData instanceof Modal)) {
-			console.error("Value of parameter (modalData) passed to Trial.waitForAnswer must be an instance of ModalData")
+			console.error(`Value of parameter (modalData) passed to Trial.waitForAnswer must be an instance of ModalData (received ${modalData.constructor.name})`)
 			return null;
 		}
 

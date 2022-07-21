@@ -12,7 +12,7 @@ class ModalData{
 	constructor(title=null,
 				content=null,
 				choices=[window.localise.get("btn.yes"), window.localise.get("btn.no")],
-				callback=null,
+				on_close_callback=null,
 				width=null,
 				after_build_callback=null
 				){
@@ -21,7 +21,7 @@ class ModalData{
 		this._content = content;
 		this._after_build_callback = after_build_callback;
 		this._choices = choices || [];
-		this._callback = callback;
+		this._on_close_callback = on_close_callback;
 		this.to_close = false;
 
 		this.width = width || 500;
@@ -53,8 +53,8 @@ class ModalData{
 		return this._choices;
 	}
 
-	get callback(){
-		return this._callback;
+	get on_close_callback(){
+		return this._on_close_callback;
 	}
 }
 
@@ -145,8 +145,8 @@ class Modal {
 
 	close(){
 
-		if (typeof(this.data.callback) === "function"){
-			this.data.callback(this.answer);
+		if (typeof(this.data.on_close_callback) === "function"){
+			this.data.on_close_callback(this.answer);
 		}
 
 		// this.modal_window.dialog("close")

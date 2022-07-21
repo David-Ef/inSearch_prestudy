@@ -607,30 +607,53 @@ import * as Questionnaire from "./src/Questionnaire.js";
           [localise.get("btn.inside"), localise.get("btn.outside")])
       )
       .waitForAnswer(
-        new Questionnaire.ContinuousScale(
+        new Questionnaire.DiscreteScaleNumKeyAnswer(
         localise.get("question2"),
-        "inout_2",
-        [localise.get("btn.inside"), localise.get("btn.outside")],
-        null,
-        "Answer with the slider below"
+          "inout_2",
+          [0, 9],
+          0,
+          [localise.get("btn.inside"), localise.get("btn.outside")],
+          null,
+          "Answer with the slider below"
         )
         .asModalData(localise.get("question.title", 2,3),
         () => {
-          console.warn(experiment.currentStimuliMngr.currentSceneType);
-          $("#fill-scene-type").text(experiment.currentStimuliMngr.currentSceneType);
+          let scene_type = experiment.currentStimuliMngr.currentSceneType;
+          if (expe_info["lang"] !== "en"){
+            const scene_type_abbr = localise.get(scene_type);
+            const local_scene_type = localise.get(scene_type_abbr, "bb");
+            if (local_scene_type !== null) {
+              scene_type = local_scene_type;
+            } else {
+              scene_type = scene_type_abbr;
+            }
+          }
+          $("#fill-scene-type").text(scene_type);
         },)
       )
       .waitForAnswer(
-        new Questionnaire.ContinuousScale(
-        localise.get("question3"),
-        "inout_3",
-        [localise.get("btn.slide0"), localise.get("btn.slide1")],
-        "Answer with the slider below"
+        new Questionnaire.DiscreteScaleNumKeyAnswer(
+          localise.get("question3"),
+          "inout_3",
+          [0, 9],
+          0,
+          [localise.get("btn.slide0"), localise.get("btn.slide1")],
+          null,
+          "Answer with the slider below"
         )
         .asModalData(localise.get("question.title", 3,3),
         () => {
-          console.warn(experiment.currentStimuliMngr.currentSceneType);
-          $("#fill-scene-type").text(experiment.currentStimuliMngr.currentSceneType);
+          let scene_type = experiment.currentStimuliMngr.currentSceneType;
+          if (expe_info["lang"] !== "en"){
+            const scene_type_abbr = localise.get(scene_type);
+            const local_scene_type = localise.get(scene_type_abbr, "bb");
+            if (local_scene_type !== null) {
+              scene_type = local_scene_type;
+            } else {
+              scene_type = scene_type_abbr;
+            }
+          }
+          $("#fill-scene-type").text(scene_type);
         },)
       )
       .lambda(() => {

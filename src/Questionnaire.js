@@ -6,6 +6,7 @@
  */
 "use strict";
 
+import { InputMngr } from "./InputMngr.js";
 import { DataMngr } from "./DataMngr.js";
 import { Modal, ModalData } from "./Modal.js";
 
@@ -16,7 +17,7 @@ class BaseQuestItem{
                 tooltip=null
                 ){
 
-        // Param
+        // Parameters
         this._question = question;
         this._id = id;
         this._callback = callback;
@@ -50,11 +51,17 @@ class ModalWrapper extends ModalData{
                 title,
                 choices,
                 after_build_callback=null,
+                on_close_callback=null,
                 width=500
                 ){
 
         // Called when modal is closed
         const callback = () => {
+
+            if (typeof(on_close_callback) === "function"){
+                on_close_callback(ans);
+            }
+
             const ans = QuestObj.answer;
             DataMngr.instance.write(`Quest.[${QuestObj._id}] answer: ${ans}`, true);
 
@@ -429,9 +436,9 @@ class Scale extends BaseQuestItem{
         return $(`input[id="${this._id}"]`).val();
     }
 
-    asModalData(title="", after_build_callback=null){
+    asModalData(title="", after_build_callback, on_close_callback){
 
-        return new ModalWrapper(this, title, [window.localise.get("btn.acpt")], after_build_callback);
+        return new ModalWrapper(this, title, [window.localise.get("btn.acpt")], after_build_callback, on_close_callback);
     }
 }
 
@@ -439,6 +446,7 @@ class DiscreteScale extends Scale{
     constructor(question=null,
                 id=null,
                 extremas=[0,20],
+                startvalue=null,
                 labels="",
                 callback=null,
                 tooltip=null
@@ -446,29 +454,95 @@ class DiscreteScale extends Scale{
 
         super(question, id, callback, tooltip, extremas, labels);
 
+        this.startvalue = startvalue;
+        if (startvalue === null) {
+            this.startvalue = Math.floor((this._extremas[0]+this._extremas[1])/2);
+        }
+
         this._buildHTML();
     }
 
     _buildHTML(){
         super._buildHTML();
 
-        this._html += `<input id="${this._id}" type="range" min="${this._extremas[0]}" max="${this._extremas[1]}" value="${(this._extremas[0]+this._extremas[1])/2}" step="1" class="slider">`;
+        this._html += `<input id="${this._id}" type="range" min="${this._extremas[0]}" max="${this._extremas[1]}" value="${this.startvalue}" step="1" class="slider">`;
 
-        this._html += `<br /><p style="text-align: right;" id="${this._id}" class="input_label"> ${(this._extremas[0]+this._extremas[1])/2} ${this._labels}</p>`;
+        this._html += `<table style="width:100%"><tr><td>${this._labels[0]}</td><td id=${this._id} style="text-align: right;">${this.startvalue}</td><td style="text-align: right;">${this._labels[1]}</td></tr></table>`;
 
     }
 
-    asModalData(title=""){
+    asModalData(title="", manual_after_build_callback){
 
         const after_build_callback = (modal) => {
-            const sel = $(`.input_label#${this._id}`);
+            manual_after_build_callback();
+
+            const sel = $(`td#${this._id}`);
 
             $(`input#${this._id}`).on("input", (el) => {
-                sel.text(`${el.target.value} ${this._labels}`);
+                sel.text(`${el.target.value}`);
             });
         };
 
-        return new ModalWrapper(this, title, [window.localise.get("btn.acpt")], after_build_callback);
+        return super.asModalData(title, after_build_callback );
+    }
+}
+
+class DiscreteScaleNumKeyAnswer extends DiscreteScale{
+    constructor(question=null,
+                id=null,
+                extremas=[0,20],
+                startvalue=null,
+                labels="",
+                callback=null,
+                tooltip=null
+                ){
+        super(question, id, extremas, startvalue, labels, callback, tooltip);
+    }
+
+    asModalData(title="", manual_after_build_callback){
+        // Num key press to listen to
+        const numkeycodes = [
+            // Numpad
+            96,97,98,99,100,101,102,103,104,105,
+            // We don't bother checking for shift being pressed
+            48,49,50,51,52,53,54,55,56,57
+            ]
+
+        const after_build_callback = () => {
+            manual_after_build_callback();
+
+            const sel_disp = $(`td#${this._id}`);
+            const sel_input = $(`input#${this._id}`);
+
+            const inputMngr = InputMngr.instance;
+
+            // Add input listeners (num keys)
+            for (let ik = 0; ik < 20; ik++){
+                inputMngr.addCallback("DScaleNumAns_"+ik%10, numkeycodes[ik], (el) => {
+                    sel_input.val(parseInt(el.split("_")[1]));
+                    sel_disp.text(`${parseInt(el.split("_")[1])}`);
+                });
+            }
+
+            inputMngr.addCallback("DScaleNumAns_ret", 13, () => {
+                $("button.ui-widget").click();
+            });
+
+            // Display current value as number
+            sel_input.on("input", (el) => {
+                sel_disp.text(`${el.target.value}`);
+            });
+        };
+
+        const on_close_callback = () => {
+            // Remove input listener
+            for (let ik = 0; ik < 20; ik++){
+                inputMngr.removeCallback("DScaleNumAns_"+ik%10);
+            }
+            inputMngr.removeCallback("DScaleNumAns_ret");
+        }
+
+        return super.asModalData(title, after_build_callback, on_close_callback );
     }
 }
 
@@ -487,7 +561,7 @@ class ContinuousScale extends Scale{
 
     _getValue(){
         // Return percentage
-        return ($(`input[id="${this._id}"]`).val() / this._extremas[1]) * 100;
+        return (super._getValue() / this._extremas[1]) * 100;
     }
 
     _buildHTML(){
@@ -526,6 +600,7 @@ class ContinuousRange extends ContinuousScale{
 }
 
 export { UniqueChoice,
-    DiscreteScale, ContinuousScale,
+    DiscreteScale, DiscreteScaleNumKeyAnswer,
+    ContinuousScale,
     LineAnswer,
     MultipleChoiceImage,};
