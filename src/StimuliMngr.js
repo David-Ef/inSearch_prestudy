@@ -19,6 +19,8 @@ class StimuliMngr{
 		this.stim_list = Array(); // list of URIs
 		this.stim_order = order; // Presentation order
 
+		print(this.stim_order);
+
 		this._index = -1;
 		this._ready = false;
 
@@ -87,7 +89,7 @@ class StimuliMngr{
 	}
 
 	get hasNext(){
-		return this._index < this.length;
+		return (this._index+1) < this.length;
 	}
 	get currentScenePath(){
 		return this._root + "/scenes/" + this.scene_list[this.stim_order[this._index][0]] + ".jpg";
