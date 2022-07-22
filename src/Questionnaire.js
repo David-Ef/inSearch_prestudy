@@ -59,7 +59,7 @@ class ModalWrapper extends ModalData{
         const callback = () => {
 
             if (typeof(on_close_callback) === "function"){
-                on_close_callback(ans);
+                on_close_callback();
             }
 
             const ans = QuestObj.answer;
@@ -471,7 +471,7 @@ class DiscreteScale extends Scale{
 
     }
 
-    asModalData(title="", manual_after_build_callback){
+    asModalData(title="", manual_after_build_callback, on_close_callback){
 
         const after_build_callback = (modal) => {
             manual_after_build_callback();
@@ -483,7 +483,7 @@ class DiscreteScale extends Scale{
             });
         };
 
-        return super.asModalData(title, after_build_callback );
+        return super.asModalData(title, after_build_callback, on_close_callback);
     }
 }
 
@@ -535,6 +535,9 @@ class DiscreteScaleNumKeyAnswer extends DiscreteScale{
         };
 
         const on_close_callback = () => {
+
+            const inputMngr = InputMngr.instance;
+
             // Remove input listener
             for (let ik = 0; ik < 20; ik++){
                 inputMngr.removeCallback("DScaleNumAns_"+ik%10);
@@ -542,7 +545,7 @@ class DiscreteScaleNumKeyAnswer extends DiscreteScale{
             inputMngr.removeCallback("DScaleNumAns_ret");
         }
 
-        return super.asModalData(title, after_build_callback, on_close_callback );
+        return super.asModalData(title, after_build_callback, on_close_callback);
     }
 }
 
