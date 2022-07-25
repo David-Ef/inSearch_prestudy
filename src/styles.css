@@ -81,12 +81,7 @@ div#cont-ObjView > #vid-name {
 	font-weight: bold;
 	font-size: 1vw;
 }
-/*
-video {
-	max-width: 320px;
-	max-height: 320px;
-}
-*/
+
 div#cont-ObjView > video {
   margin: 0;
   position: absolute;
