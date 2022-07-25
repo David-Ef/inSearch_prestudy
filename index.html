@@ -355,7 +355,7 @@ import * as Questionnaire from "./src/Questionnaire.js";
         () => {
           const ans = $("#TOSAVEonSUBMIT").val();
           dataMngr.write(`VIDEO_check=${ans}`);
-        }, null, () => {
+        }, 800, () => {
           $(".ui-dialog.ui-corner-all.ui-widget").css( { top: 50 });
         }))
       .lambda(() => {
@@ -367,25 +367,25 @@ import * as Questionnaire from "./src/Questionnaire.js";
         localise.get("instruct.title"),
         localise.get("instruct.describe1"),
         [localise.get("btn.cont")], null, $(document).width()*.5, () => {
-          $(".ui-dialog.ui-corner-all.ui-widget").css( { top: 50 });
+          $(".ui-dialog.ui-corner-all.ui-widget").css( { top: 10 });
          }))
       .waitForAnswer(new ModalData(
         localise.get("instruct.title"),
         localise.get("instruct.describe2"),
         [localise.get("btn.cont")], null, $(document).width()*.5, () => {
-          $(".ui-dialog.ui-corner-all.ui-widget").css( { top: 50 });
+          $(".ui-dialog.ui-corner-all.ui-widget").css( { top: 10 });
          }))
       .waitForAnswer(new ModalData(
         localise.get("instruct.title"),
         localise.get("instruct.describe3"),
         [localise.get("btn.cont")], null, $(document).width()*.5, () => {
-          $(".ui-dialog.ui-corner-all.ui-widget").css( { top: 50 });
+          $(".ui-dialog.ui-corner-all.ui-widget").css( { top: 10 });
          }))
       .waitForAnswer(new ModalData(
         localise.get("instruct.title"),
         localise.get("instruct.describe4"),
-        [localise.get("btn.cont")], null, $(document).width()*.5, () => {
-          $(".ui-dialog.ui-corner-all.ui-widget").css( { top: 50 });
+        [localise.get("btn.cont")], null, $(document).width()*.9, () => {
+          $(".ui-dialog.ui-corner-all.ui-widget").css( { top: 10 });
       }));
 
     const trial_instruct_do = new Trial("Practice UI")
