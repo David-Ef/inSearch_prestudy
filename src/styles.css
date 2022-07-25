@@ -4,7 +4,7 @@ body{
 }
 
 div#cont-cont {
-	margin-top: 40px;
+	margin-top: 120px;
 	position: absolute;
 	width: 100%;
 	height: calc(60vw * (2/3) + 19px);
@@ -27,19 +27,10 @@ div#cont-VP {
 div#cont-EquirectView {
 	position: absolute;
 	left: calc(60% + 17px);
-	/*top: calc(260px + 20px);*/
 	bottom: 0px;
 
-	/*margin-left: 5%;*/
-
-	width: calc( (50vw * (2/3) - 275px) *2);
-	height: calc(50vw * (2/3) - 275px);
-
-	width: 512px;
-	height: 256px;
-
-	max-width: 600px;
-	max-height: 300px;
+	width: calc( 40vw - 25px );
+	height: calc( (40vw - 25px) /2);
 
 	padding: 5px;
 	padding-left: 0px;
@@ -52,12 +43,8 @@ div#cont-EquirectView {
 div#cont-Info {
 	position: absolute;
 	left: calc(60% + 17px);
-	/*top: calc(260px + 20px);*/
-	bottom: 268px;
+	bottom: calc( (40vw - 10px) /2);
 
-	/*margin-left: 5%;*/
-
-	/*width: calc( (50vw * (2/3) - 275px) *2);*/
 	height: 20px;
 
 	max-width: 600px;
@@ -77,8 +64,8 @@ div#cont-ObjView {
 	left: calc(60% + 20px);
 	top: 5px;
 
-	width: 324px;
-	height: 324px;
+	width: calc( (40vw - 50px) /2);
+	height: calc( (40vw - 50px) /2);
 
 	padding: 5px;
 
@@ -92,14 +79,14 @@ div#cont-ObjView > #vid-name {
 	left:5px;
 	z-index:1;
 	font-weight: bold;
-	font-size: 19px;
+	font-size: 1vw;
 }
-
+/*
 video {
 	max-width: 320px;
 	max-height: 320px;
 }
-
+*/
 div#cont-ObjView > video {
   margin: 0;
   position: absolute;
@@ -108,6 +95,7 @@ div#cont-ObjView > video {
   left: 50%;
 
   width: 95%;
+  height: 95%;
 
   z-index:0;
 

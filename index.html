@@ -13,7 +13,8 @@ if (!(array_key_exists('hash_afkoi89r156r848re', $_SESSION))) {
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <title>Object placement pilot study - Scene Grammar lab</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"> -->
+  <meta name="viewport" content="width=device-width, initial-scale=1"> 
     <!-- External libraries -->
     <script src="src/ext/jQuery/jquery.js"></script>
     <script src="src/ext/jQuery/jquery-ui.min.js"></script>
@@ -356,7 +357,7 @@ import * as Questionnaire from "./src/Questionnaire.js";
           const ans = $("#TOSAVEonSUBMIT").val();
           dataMngr.write(`VIDEO_check=${ans}`);
         }, 800, () => {
-          $(".ui-dialog.ui-corner-all.ui-widget").css( { top: 50 });
+          $(".ui-dialog.ui-corner-all.ui-widget").css( { top: 10 });
         }))
       .lambda(() => {
         dataMngr.stop_record();
