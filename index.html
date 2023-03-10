@@ -1,13 +1,3 @@
-<?php
-session_start();
-
-if (!(array_key_exists('hash_afkoi89r156r848re', $_SESSION))) {
-  $rand = md5(mt_rand());
-  $hash = sha1($rand);
-  $_SESSION["hash_afkoi89r156r848re"] = $hash;
-}
-?>
-
 <!DOCTYPE html>
 <html><head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
@@ -28,7 +18,9 @@ if (!(array_key_exists('hash_afkoi89r156r848re', $_SESSION))) {
   </head>
   <body style="overflow: hidden; margin: 0px; padding: 0px; inset: 0px; position: fixed;">
 
-<div style="text-align: center;font-weight: bold;font-size: 22px; display: inline;" id="wait-loading">Please wait while your browser is loading data...</div>
+<!-- <div style="text-align: center;font-weight: bold;font-size: 22px; display: inline;" id="wait-loading">Please wait while your browser is loading data...</div>
+ -->
+<div style="text-align: center;font-weight: bold;font-size: 22px; display: inline;" id="wait-loading">This experiment has ended. We are no longer recruiting for it. Thank you for your interest.</div>
 
 <div id="cont-cont" style="display:none;">
   <div id="cont-VP"></div>
@@ -98,7 +90,7 @@ import * as Questionnaire from "./src/Questionnaire.js";
   // The playlist file contains 150 playlists
   expe_info["isubj"] = expe_info["isubj"] % 150;
 
-  expe_info["SONA"] = url.searchParams.get("sona") || "";
+  expe_info["SONA"] = url.searchParams.get("SONA") || "";
 
   const debug = new DebugInfo();
   debug.enabled = expe_info["debug"]
@@ -131,6 +123,8 @@ import * as Questionnaire from "./src/Questionnaire.js";
 
   const stimuliMngr = new StimuliMngr(`./res/stim_list_${expe_info["lang"]}.json`);
   const trialData = new TrialData("./res/playlists.json")
+
+  let waituntil_flag = false;
 
   function main(){
 
@@ -411,6 +405,8 @@ import * as Questionnaire from "./src/Questionnaire.js";
       })
       .lambda(()=> {
 
+        waituntil_flag = false;
+
         // Position border/VP down to show black VP
         sceneMngr_Equi.mouse.x = .5;
         sceneMngr_Equi.mouse.y = .0;
@@ -455,6 +451,8 @@ import * as Questionnaire from "./src/Questionnaire.js";
             sceneMngr_Equi.renderer.domElement.removeEventListener('mousemove', checkMouseMove);
             sceneMngr_Equi.renderer.domElement.removeEventListener("mouseup", checkMouseRelease);
             sceneMngr_Equi.renderer.domElement.removeEventListener('mouseleave', checkMouseRelease);
+
+            waituntil_flag = true;
           }
         }
         function checkMouseMove(event){
@@ -477,14 +475,13 @@ import * as Questionnaire from "./src/Questionnaire.js";
           }
         }
 
-        // TODO - fix shouldn't increment navStep if mouse out of target
-
         sceneMngr_Equi.renderer.domElement.addEventListener('mousedown', checkMouseDown);
         sceneMngr_Equi.renderer.domElement.addEventListener('mousemove', checkMouseMove);
         sceneMngr_Equi.renderer.domElement.addEventListener('mouseup', checkMouseRelease);
         sceneMngr_Equi.renderer.domElement.addEventListener('mouseleave', checkMouseRelease);
 
       })
+      .waitUntil(() => { return waituntil_flag; })
       .waitUntil(() => { return inputMngr.Keys[32]; })
       .lambda(() => {
         sceneMngr_VP.interactive = false;
@@ -501,6 +498,8 @@ import * as Questionnaire from "./src/Questionnaire.js";
 
         $("#cont-ObjView > #vid-name").html(localise.get("practice.content3"));
 
+        waituntil_flag = false;
+
         let nTarget = 0;
         function checkMouseDown (e){
           if (nTarget > 1) return true;
@@ -514,12 +513,6 @@ import * as Questionnaire from "./src/Questionnaire.js";
           const dist_thresh = .027;
           const isInside = dist<dist_thresh;
 
-          // $("#cont-ObjView > #vid-name").html(`<br/><br/>
-          //   VP mouse pos: ${mousePosInVP.x.toPrecision(3)}, ${mousePosInVP.y.toPrecision(3)}<br/><br/><br/><br/>
-          //   Sph mouse pos: ${mousePosOnSph.x.toPrecision(3)}, ${mousePosOnSph.y.toPrecision(3)}<br/><br/>
-          //   Dist: ${dist.toPrecision(3)} ${dist<dist_thresh}<br/><br/>
-          // `);
-
           if (isInside) {
             nTarget += isInside;
 
@@ -529,11 +522,13 @@ import * as Questionnaire from "./src/Questionnaire.js";
             } else {
               sceneMngr_Equi.setScene("./res/instruct/navigateEquirect_5.png");
               sceneMngr_VP.setScene("./res/instruct/navigateEquirect_5.png");
+
               sceneMngr_Equi.renderer.domElement.removeEventListener('mousedown', checkMouseDown);
+
+              waituntil_flag = true;
             }
           }
 
-        // localise.get("instruct.practice"),
           const modalData = new ModalData(null,
             isInside?localise.get("practice.clicksuccess"):localise.get("practice.clickfail"),
             [isInside?localise.get("btn.cont"):localise.get("btn.retry")],
@@ -554,6 +549,7 @@ import * as Questionnaire from "./src/Questionnaire.js";
 
         sceneMngr_VP.renderer.domElement.addEventListener('mousedown', checkMouseDown);
       })
+      .waitUntil(() => { return waituntil_flag; })
       .waitUntil(() => { return inputMngr.Keys[32]; })
       .waitForAnswer(new ModalData(
         localise.get("expedesc.title"),
@@ -599,7 +595,6 @@ import * as Questionnaire from "./src/Questionnaire.js";
         sceneMngr_Equi.render();
         sceneMngr_VP.render();
       })
-      // .waitUntil(() => { return inputMngr.Keys[32]; }) // Demo to display stim without interaction
       .waitUntil(() => { return $("#DotValid").prop("class") === "used";} )
       .lambda(() => {
         $("#DotValid").removeClass("used");
@@ -665,7 +660,6 @@ import * as Questionnaire from "./src/Questionnaire.js";
       .break_every(40) // Supplementary option
       .break_duration(20) // Break ends after n sec.
       .break_until(() => { return inputMngr.Keys[32]; }) // Stop break on Space key press
-      .break_modal(true) // Force minimum resting period
       .break_modal(new ModalData(
         localise.get("break.title"),
         localise.get("break.content", localise.get("btn.cont")),
@@ -724,9 +718,8 @@ import * as Questionnaire from "./src/Questionnaire.js";
             });
 
             if (expe_info["SONA"] !== "") {
-              // TODO - FILL/REPLACE SONA link
-              // const url = "https://uni-frankfurt.sona-systems.com/webstudy_credit.aspx?experiment_id=303&credit_token=??&survey_code=" + expe_info["SONA"];
-              // window.open(url, '_blank');
+              const url = "Used to contain SONA callback link";
+              window.open(url, '_blank');
             }
 
           }, 50);
@@ -765,11 +758,6 @@ import * as Questionnaire from "./src/Questionnaire.js";
         case 4:
           experiment.trial(trial_procedure, stimuliMngr)
           break;
-        // case 3:
-        //   experiment
-        //     .trial(getPreQuestionnaire(), null) // Pre-exep form
-        //     .trial(getMRT(), null); // MRT
-        //   break;
       }
       experiment.trial(trial_end, null);
     }
@@ -800,7 +788,6 @@ import * as Questionnaire from "./src/Questionnaire.js";
       main();
     }, 50);
   });
-
 
 </script>
 
