@@ -1,59 +1,39 @@
 {
 	"stim_list":
-	[
-		[
-			"bedroom",
-			{
-				"alarm_clock": "Alarm Clock",
-				"sleep_mask": "Sleep Mask",
-				"reading_glasses": "Reading Glasses",
-				"medication": "Medication",
-				"hand_lotion": "Hand Lotion",
-				"pants": "Pants",
-				"belt": "Belt",
-				"bandaid": "Bandaid",
-				"phone_charger": "Phone Charger",
-				"pocket_knife": "Pocket Knife",
-				"passport": "Passport"
-			}
-		],
-		[
-			"kitchen",
-			{
-				"measuring_cups": "Measuring Cups",
-				"ice_cream_scoop": "Ice Cream Scoop",
-				"tupperware": "Tupperware Box"
-			}
-		],
-		[
-			"livingroom",
-			{
-				"candles": "Candle",
-				"game_controller": "Game Controller",
-				"card_game": "Card Game",
-				"vr_headset": "Virtual Reality Headset",
-				"shoe_polish": "Shoe Polish",
-				"umbrella": "Umbrella",
-				"rubikscube": "Rubik's Cube",
-				"screwdriver": "Screwdriver",
-				"dollar_stack": "Banknotes"
-			}
-		],
-		[
-			"office",
-			{
-				"business_card_holder": "Business Card Holder",
-				"sticky_notes": "Sticky Notes",
-				"whiteboard_markers": "Whiteboard-Marker",
-				"printer_cartidges": "Printer Cartidges",
-				"extension_cords": "Extension Cords",
-				"tape_dispenser": "Tape Dispenser",
-				"batteries": "Batteries",
-				"sketchbook": "Sketchbook",
-				"earplugs": "In-Ear Headphones",
-				"flashlight": "Flashligh",
-				"laptop": "Laptop"
-			}
-		]
-	]
+	{
+		"alarm_clock": "Alarm Clock",
+		"sleep_mask": "Sleep Mask",
+		"reading_glasses": "Reading Glasses",
+		"medication": "Medication",
+		"hand_lotion": "Hand Lotion",
+		"pants": "Pants",
+		"belt": "Belt",
+		"bandaid": "Bandaid",
+		"phone_charger": "Phone Charger",
+		"pocket_knife": "Pocket Knife",
+		"passport": "Passport",
+		"measuring_cups": "Measuring Cups",
+		"ice_cream_scoop": "Ice Cream Scoop",
+		"tupperware": "Tupperware Box",
+		"candles": "Candle",
+		"game_controller": "Game Controller",
+		"card_game": "Card Game",
+		"vr_headset": "Virtual Reality Headset",
+		"shoe_polish": "Shoe Polish",
+		"umbrella": "Umbrella",
+		"rubikscube": "Rubik's Cube",
+		"screwdriver": "Screwdriver",
+		"dollar_stack": "Banknotes",
+		"business_card_holder": "Business Card Holder",
+		"sticky_notes": "Sticky Notes",
+		"whiteboard_markers": "Whiteboard-Marker",
+		"printer_cartridges": "Printer Cartidges",
+		"extension_cords": "Extension Cords",
+		"tape_dispenser": "Tape Dispenser",
+		"battery": "Battery",
+		"sketchbook": "Sketchbook",
+		"earphones": "In-Ear Headphones",
+		"flashlight": "Flashligh",
+		"laptop": "Laptop"
+	}
 }

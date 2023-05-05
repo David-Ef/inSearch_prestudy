@@ -1,59 +1,39 @@
 {
 	"stim_list":
-	[
-		[
-			"bedroom",
-			{
-				"alarm_clock": "Wecker",
-				"sleep_mask": "Schlafmaske",
-				"reading_glasses": "Lesebrille",
-				"medication": "Medikamente",
-				"hand_lotion": "Handcreme",
-				"pants": "Hose",
-				"belt": "Gürtel",
-				"bandaid": "Pflaster",
-				"phone_charger": "Handy Ladekabel",
-				"pocket_knife": "Taschenmesser",
-				"passport": "Reisepass"
-			}
-		],
-		[
-			"kitchen",
-			{
-				"measuring_cups": "Messbecher-Cups",
-				"ice_cream_scoop": "Eisportionierer",
-				"tupperware": "Tupperware-Box"
-			}
-		],
-		[
-			"livingroom",
-			{
-				"candles": "Kerze",
-				"game_controller": "Spiel-Controller",
-				"card_game": "Kartenspiel",
-				"vr_headset": "Virtual Reality Brille",
-				"shoe_polish": "Schuhcreme",
-				"umbrella": "Regenschirm",
-				"rubikscube": "Rubik's Cube",
-				"screwdriver": "Schreubenzieher",
-				"dollar_stack": "Geldscheine"
-			}
-		],
-		[
-			"office",
-			{
-				"business_card_holder": "Visitenkartenhalter",
-				"sticky_notes": "Haftnotizen",
-				"whiteboard_markers": "Whiteboard-Marker",
-				"printer_cartidges": "Druckerpatronen",
-				"extension_cords": "Verlängerungskabel",
-				"tape_dispenser": "Tesafilm",
-				"batteries": "Batterien",
-				"sketchbook": "Notizbuch",
-				"earplugs": "In-Ear Kopfhörer",
-				"flashlight": "Taschenlampe",
-				"laptop": "Laptop"
-			}
-		]
-	]
+	{
+		"alarm_clock": "Wecker",
+		"sleep_mask": "Schlafmaske",
+		"reading_glasses": "Lesebrille",
+		"medication": "Medikamente",
+		"hand_lotion": "Handcreme",
+		"pants": "Hose",
+		"belt": "Gürtel",
+		"bandaid": "Pflaster",
+		"phone_charger": "Handy Ladekabel",
+		"pocket_knife": "Taschenmesser",
+		"passport": "Reisepass",
+		"measuring_cups": "Messbecher-Cups",
+		"ice_cream_scoop": "Eisportionierer",
+		"tupperware": "Tupperware-Box",
+		"candles": "Kerze",
+		"game_controller": "Spiel-Controller",
+		"card_game": "Kartenspiel",
+		"vr_headset": "Virtual Reality Brille",
+		"shoe_polish": "Schuhcreme",
+		"umbrella": "Regenschirm",
+		"rubikscube": "Rubik's Cube",
+		"screwdriver": "Schreubenzieher",
+		"dollar_stack": "Geldscheine",
+		"business_card_holder": "Visitenkartenhalter",
+		"sticky_notes": "Haftnotizen",
+		"whiteboard_markers": "Whiteboard-Marker",
+		"printer_cartridges": "Druckerpatronen",
+		"extension_cords": "Verlängerungskabel",
+		"tape_dispenser": "Tesafilm",
+		"battery": "Batterie",
+		"sketchbook": "Notizbuch",
+		"earphones": "In-Ear Kopfhörer",
+		"flashlight": "Taschenlampe",
+		"laptop": "Laptop"
+	}
 }
