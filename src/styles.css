@@ -171,7 +171,7 @@ span#DotValid {
 	font-size: 20px;
 }
 
-#fill-scene-type {
+#fill-scene-type, #fill-object {
 	font-weight: bold;
 }
 

@@ -1,1 +1,810 @@
-index.php
+
+<!DOCTYPE html>
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>Object placement pilot study - Scene Grammar lab</title>
+    <meta charset="utf-8">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"> -->
+  <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <!-- External libraries -->
+    <script src="src/ext/jQuery/jquery.js"></script>
+    <script src="src/ext/jQuery/jquery-ui.min.js"></script>
+    <script src="src/ext/FileSaver.min.js"></script>
+
+    <link href="src/ext/jQuery/jquery-ui.min.css" rel="stylesheet">
+
+    <link href="src/styles.css" rel="stylesheet">
+    <link href="src/formUI.css" rel="stylesheet">
+
+  </head>
+  <body style="overflow: hidden; margin: 0px; padding: 0px; inset: 0px; position: fixed;">
+
+<!-- <div style="text-align: center;font-weight: bold;font-size: 22px; display: inline;" id="wait-loading">Please wait while your browser is loading data...</div>
+ -->
+<div style="text-align: center;font-weight: bold;font-size: 22px; display: inline;" id="wait-loading">This experiment has ended. We are no longer recruiting for it. Thank you for your interest.</div>
+
+<div id="cont-cont" style="display:none;">
+  <div id="cont-VP"></div>
+  <div id="cont-EquirectView"></div>
+  <div id="cont-ObjView">
+    <video id="video" src="" controls="" playsinline autoplay muted loop> Your browser does not support HTML5 video. </video>
+    <div id="vid-name">Placeholder</div>
+  </div>
+  <div id="cont-Info">
+    Scene 0/8 | Object 0/20 (placeholder)
+  </div>
+</div>
+
+<span id="DotValid" style="display: none;"></span>
+
+<div id="modal-container"></div>
+
+<script type="module">
+/**
+ * @author Erwan David <David@psych.uni-frankfurt.de>
+ * @lab SGL, Goethe University, Frankfurt
+ * @year 2023
+ * @comment 
+ */
+
+"use strict";
+
+import { InputMngr } from "./src/InputMngr.js";
+import { Trial, Experiment } from "./src/Protocol.js";
+import { DataMngr } from "./src/DataMngr.js";
+import { StimuliMngr } from "./src/StimuliMngr.js";
+import { TrialData } from "./src/TrialData.js";
+// import { ConditionMngr } from "./src/ConditionMngr.js";
+import { Modal, ModalData } from "./src/Modal.js";
+import { WindowFunc } from "./src/Window.js";
+import { uuidv4 } from "./src/Utils.js";
+// import { TrialData } from "./src/TrialData.js";
+import { SceneMngr as SceneMngr_Equi } from "./src/SceneMngr_Equirect.js";
+import { SceneMngr as SceneMngr_VP } from "./src/SceneMngr_Viewport.js";
+import { DebugInfo } from "./src/Debug.js";
+import { Localise } from "./src/Localisation.js";
+import * as Questionnaire from "./src/Questionnaire.js";
+
+  // GENERAL/MISC ###############
+
+  let UUID = uuidv4();
+
+  // Expe info
+  const url = new URL(window.location.href);
+  const expe_info = {
+    // Number of trials
+    "n_stim": parseInt(url.searchParams.get("ns")) || 136,
+    // Localisation
+    "lang": url.searchParams.get("lang") || "de",
+    // Print debug info in the console, along with all trial data recording
+    "debug": url.searchParams.get("debug")==1,
+    // Go straight to a specific part of the experiment
+    "spe": parseInt(url.searchParams.get("spe")),
+    // Subject number
+    "isubj": parseInt(url.searchParams.get("isubj"))
+  }
+
+  if (expe_info["isubj"] < 0 || isNaN(expe_info["isubj"]) ){
+    expe_info["isubj"] = Math.floor(Math.random() * 40)
+  }
+
+  // The playlist file contains 150 playlists
+  expe_info["isubj"] = expe_info["isubj"] % 150;
+
+  expe_info["SONA"] = url.searchParams.get("SONA") || "";
+
+  const debug = new DebugInfo();
+  debug.enabled = expe_info["debug"]
+  window.debug = debug;
+
+  try{ print = null; }
+  catch(err) { let print = null; }
+
+  print = function(){
+    if (debug.enabled){
+      console.log(...arguments);
+    }
+  }
+
+  const backgroundcolor = 'rgba(127,127,127, 255)';
+  $("body").css("background-color", backgroundcolor);
+
+  // ##############################
+
+  const windowFunc = new WindowFunc();
+
+  const dataMngr = new DataMngr(); // DataMngr.js
+  const inputMngr = new InputMngr(); // InputMngr.js
+
+  const sceneMngr_Equi = new SceneMngr_Equi("cont-EquirectView");
+  const sceneMngr_VP = new SceneMngr_VP("cont-VP");
+
+  const localise = new Localise(expe_info["lang"])
+  window.localise = localise; // Need to keep it a global level (used in SceneMngr)
+
+  const stimuliMngr = new StimuliMngr(`./res/stim_list_${expe_info["lang"]}.json`);
+  const trialData = new TrialData("./res/playlists.json")
+
+  let waituntil_flag = false;
+
+  function main(){
+
+    $("#wait-loading").remove();
+    $("#cont-cont").hide();
+
+    trialData.setPlaylist(expe_info["isubj"]);
+    stimuliMngr.stim_order = trialData.playlist.slice(0, expe_info["n_stim"]);
+
+    sceneMngr_Equi.VP_scene = sceneMngr_VP;
+    sceneMngr_VP.Equi_scene = sceneMngr_Equi;
+
+    const onModalCloseClbk = (answer) => {
+
+      sceneMngr_VP.ToggleDot(false);
+
+      if (answer == localise.get("btn.yes")) {
+        $("#DotValid").addClass("used");
+
+        const camAngle = sceneMngr_VP.material.uniforms["camAngle"].value;
+        const mousePos = sceneMngr_VP.mouse;
+        const mousePosOnSph = sceneMngr_VP.VPpoint2EquirectConvert(mousePos);
+        
+        dataMngr.write(`camAngle: ${camAngle.x}, ${camAngle.y}, ${camAngle.z}`);
+        dataMngr.write(`mousePos: ${mousePos.x}, ${mousePos.y}`);
+        dataMngr.write(`posOnSph: ${mousePosOnSph.x}, ${mousePosOnSph.y}`);
+
+      } else {
+        sceneMngr_Equi.ToggleActive(true);
+        sceneMngr_VP.ToggleActive(true);
+      }
+
+      sceneMngr_Equi.render();
+      sceneMngr_VP.render();
+    }
+
+    sceneMngr_VP.ExtCanvasClickClbk = (scenemngr) => {
+
+      const modalData = new ModalData(null, localise.get("question0"), [localise.get("btn.yes"), localise.get("btn.no")], onModalCloseClbk, "300");
+      const modal = new Modal(modalData);
+      modal.build().show({my: "left", at: "right", of: "#DotValid"});
+      $("#DotValid").hide();
+
+      sceneMngr_Equi.ToggleActive(false);
+      sceneMngr_VP.ToggleActive(false);
+      sceneMngr_Equi.render();
+      sceneMngr_VP.render();
+    };
+
+    const trial_preexpe = new Trial("Pre-expe modals")
+      .waitForAnswer(new ModalData(
+        localise.get("expedesc.title"),
+        localise.get("expedesc.content1", [localise.get("btn.cont")]),
+        [localise.get("btn.cont")]))
+      .waitForAnswer(new ModalData(
+        localise.get("expedesc.title"),
+        localise.get("expedesc.content2", 40),
+         [localise.get("consent.btn")]))
+      .waitForAnswer(new ModalData(
+        localise.get("consent.title"),
+        localise.get("consent.content"),
+        [localise.get("btn.rejt"), localise.get("btn.acpt")]))
+      .waitForAnswer(new ModalData(localise.get("consent.redir.title"),
+        (modal) => {
+          if (Modal.last_answer === localise.get("btn.rejt")){
+            window.location = "https://uni-frankfurt.de";
+
+            setTimeout(()=>{ $("button:contains(\"auto\")").remove(); }, 50);
+            return localise.get("consent.redir");
+          }
+          else {
+            modal.data.to_close = true;
+            return "";
+          }
+        },
+        []))
+      .waitForAnswer(new ModalData(
+        localise.get("fullscrn.title"),
+        (modal) => {
+          setTimeout(()=>{
+              $(`button:contains(\"${localise.get("btn.cont")}\")`)
+                .off()
+                .on("click", () => {
+                  windowFunc.enterFullscreen();
+                  modal.close();
+              });
+            }, 50);
+         return localise.get("fullscrn.content");
+        },
+        [localise.get("btn.cont")]))
+      .waitForAnswer(new ModalData(
+        localise.get("card.title"),
+        localise.get("card.content", localise.get("btn.conf")),
+        [localise.get("btn.conf")],
+        (ans) => { // after modal close callback
+
+          const card = $("#card-test-resizable");
+
+          const card_dim_px = [card.width(), card.height()];
+          const card_dim_mm = [85.60,  53.98];
+          const screen_dim_px = [$(document).width(), $(document).height()];
+          const screen_dim_mm = [0, 0];
+
+          screen_dim_mm[0] = card_dim_mm[0] / card_dim_px[0] * screen_dim_px[0];
+          screen_dim_mm[1] = card_dim_mm[1] / card_dim_px[1] * screen_dim_px[1];
+
+          dataMngr.start_record(0, "screen size");
+          dataMngr.write("card_dim_px: " + card_dim_px[0] + ", " + card_dim_px[1]);
+          dataMngr.write("card_dim_mm: " + card_dim_mm[0] + ", " + card_dim_mm[1]);
+          dataMngr.write("screen_dim_px: " + screen_dim_px[0] + ", " + screen_dim_px[1]);
+          dataMngr.write("screen_dim_mm: " + screen_dim_mm[0] + ", " + screen_dim_mm[1]);
+          dataMngr.stop_record();
+
+        }, 800,
+        (modal) => { // after_build_callback to set resizable
+          $("#card-test-resizable")
+          .resizable( {handles: "se"} )
+          .on("dragstart", () => { return false;});
+        }))
+      .waitForAnswer(new ModalData(
+        localise.get("subjdata.title"),
+        (modal) => {
+          dataMngr.start_record(0, "Subj info");
+
+          setTimeout(()=>{
+              function setButtonEnabled(bool){
+                $(`button:contains(\"${localise.get("btn.cont")}\")`)
+                  .prop("disabled", !bool)
+                  .css("color", bool?"black":"gray");
+              }
+              setButtonEnabled(false);
+
+              const selector = "input#UUID, input#EXPRA_CODE, select#sex, input#age, input#resid, input#dist2screen, input#screenW, input#screenH, input#UserAgent, input#screenWpix, input#screenHpix";
+
+              $(`button:contains(\"${localise.get("btn.cont")}\")`).off().on("click", () => {
+                  // event.stopPropagation();
+                  const inputs = $(selector);
+
+                  inputs.each((iel, el) => {
+                    el = $(el);
+                    const data = el.attr("id") + "=" + el.val();
+                    dataMngr.write(data)
+                  });
+
+                  dataMngr.write("iSubj=" + expe_info["isubj"]);
+                  dataMngr.write("SONA=" + expe_info["SONA"]);
+
+                  modal.close();
+              });
+
+              $(selector)
+                .on("change paste keyup",(el) => {
+
+                  const inputs = $(selector);
+                  let sum = 0;
+                  let total = 0;
+
+                  inputs.each((iel, el) => {
+                    el = $(el);
+
+                    const minE = el.attr("min") !== undefined;
+                    const maxE = el.attr("max") !== undefined;
+
+                    if (minE && maxE){
+                      const val = parseInt(el.val());
+                      sum += el.attr("min") <= val && el.attr("max") >= val;
+                    }
+                    else {
+                      sum += el.val().length >= 3;
+                    }
+
+                    total++;
+                  });
+                  setButtonEnabled(sum == total);
+
+                });
+
+            }, 50);
+         return localise.get("subjdata.content", UUID, navigator.userAgent, $(document).width(), $(document).height());
+        },
+        [localise.get("btn.cont")], null, 600))
+      .lambda(() => { dataMngr.stop_record(); }, "stop recording");
+
+    const trial_checks = new Trial("Pre-expe checks")
+      .lambda(() => {
+        dataMngr.start_record(0, "tech_checks");
+      })
+      .waitForAnswer(new ModalData(
+        localise.get("expecheck.title"),
+        localise.get("expecheck.content1"),
+        [localise.get("btn.cont")],
+        () => {
+          const ans = $("#TOSAVEonSUBMIT").val();
+          dataMngr.write(`Equi_check=${ans}`);
+        },
+        null,
+        () => {
+          const tmp_Equi = new SceneMngr_Equi("cont-tmp");
+          tmp_Equi.interactive = false;
+          tmp_Equi.material.uniforms["showBorder"].value = false;
+          tmp_Equi.setScene("./res/instruct/check_equirect.png");
+        }
+      ))
+      .waitForAnswer(new ModalData(
+        localise.get("expecheck.title"),
+        localise.get("expecheck.content2"),
+        [localise.get("btn.cont")],
+        () => {
+          const ans = $("#TOSAVEonSUBMIT").val();
+          dataMngr.write(`VP_check=${ans}`);
+        },
+        null,
+        () => {
+          const tmp_VP = new SceneMngr_VP("cont-tmp");
+          tmp_VP.interactive = false;
+          tmp_VP.setScene("./res/instruct/check_viewport.png");
+        }
+      ))
+      .waitForAnswer(new ModalData(
+        localise.get("expecheck.title"),
+        localise.get("expecheck.content3"),
+        [localise.get("btn.cont")], 
+        () => {
+          const ans = $("#TOSAVEonSUBMIT").val();
+          dataMngr.write(`VIDEO_check=${ans}`);
+        }, 800, () => {
+          $(".ui-dialog.ui-corner-all.ui-widget").css( { top: 10 });
+        }))
+      .lambda(() => {
+        dataMngr.stop_record();
+      });
+
+    const trial_instruct_show = new Trial("Describe UI")
+      .waitForAnswer(new ModalData(
+        localise.get("instruct.title"),
+        localise.get("instruct.describe1"),
+        [localise.get("btn.cont")], null, $(document).width()*.5, () => {
+          $(".ui-dialog.ui-corner-all.ui-widget").css( { top: 10 });
+         }))
+      .waitForAnswer(new ModalData(
+        localise.get("instruct.title"),
+        localise.get("instruct.describe2"),
+        [localise.get("btn.cont")], null, $(document).width()*.5, () => {
+          $(".ui-dialog.ui-corner-all.ui-widget").css( { top: 10 });
+         }))
+      .waitForAnswer(new ModalData(
+        localise.get("instruct.title"),
+        localise.get("instruct.describe3"),
+        [localise.get("btn.cont")], null, $(document).width()*.5, () => {
+          $(".ui-dialog.ui-corner-all.ui-widget").css( { top: 10 });
+         }))
+      .waitForAnswer(new ModalData(
+        localise.get("instruct.title"),
+        localise.get("instruct.describe4"),
+        [localise.get("btn.cont")], null, $(document).width()*.9, () => {
+          $(".ui-dialog.ui-corner-all.ui-widget").css( { top: 10 });
+      }));
+
+    const trial_instruct_do = new Trial("Practice UI")
+      .waitForAnswer(new ModalData(
+        localise.get("practice.title"),
+        localise.get("practice.content1"),
+        [localise.get("btn.cont")]))
+      .lambda(() => {
+
+        $("#cont-Info").text("");
+        $("#cont-ObjView > video").hide();
+        $("#cont-cont").show();
+        window.dispatchEvent(new Event('resize')); // trigger resize
+      })
+      .lambda(() => {
+        sceneMngr_Equi.interactive = false;
+        sceneMngr_Equi.setScene("./res/instruct/navigateEquirect_1.png");
+        sceneMngr_VP.setScene("./res/instruct/navigateEquirect_VP.jpg");
+      })
+      .waitUntil(() => {
+        return sceneMngr_Equi.isSceneSet && sceneMngr_VP.isSceneSet;
+      })
+      .lambda(()=> {
+
+        waituntil_flag = false;
+
+        // Position border/VP down to show black VP
+        sceneMngr_Equi.mouse.x = .5;
+        sceneMngr_Equi.mouse.y = .0;
+        sceneMngr_Equi.moveViewportBorder();
+
+        sceneMngr_VP.interactive = false;
+        sceneMngr_Equi.interactive = true;
+        sceneMngr_Equi.showImgLoadingTexture = false;
+
+        sceneMngr_Equi.render();
+        sceneMngr_VP.render();
+
+        $("#cont-ObjView > #vid-name").html(localise.get("practice.content2"));
+
+        let isMouseBtnDown = false;
+        let navStep = 0;
+        const targets = { "left": {"x": .9, "y": .5}, "right": {"x": .1, "y": .5} };
+        function checkMouseDown(event){
+          if (navStep > 1) return true;
+          isMouseBtnDown = true;
+          sceneMngr_Equi.setScene(`./res/instruct/navigateEquirect_${navStep?3:2}.png`);
+          // Click happened in the middle of the the panel?
+        }
+        function checkMouseRelease(event){
+          if (navStep > 1) return true;
+          isMouseBtnDown = false;
+          sceneMngr_Equi.setScene("./res/instruct/navigateEquirect_1.png");
+          // Release happened in the expected side of the screen?
+
+          Object.keys(targets).forEach((key) => {
+            const dist = sceneMngr_Equi.mouse.distanceTo(targets[key]) < .1;
+            if (dist) {
+              navStep++;
+              return;
+            }
+          });
+
+          if (navStep > 1) {
+            sceneMngr_Equi.setScene("./res/instruct/navigateEquirect_5.png");
+
+            sceneMngr_Equi.renderer.domElement.removeEventListener("mousedown", checkMouseDown);
+            sceneMngr_Equi.renderer.domElement.removeEventListener('mousemove', checkMouseMove);
+            sceneMngr_Equi.renderer.domElement.removeEventListener("mouseup", checkMouseRelease);
+            sceneMngr_Equi.renderer.domElement.removeEventListener('mouseleave', checkMouseRelease);
+
+            waituntil_flag = true;
+          }
+        }
+        function checkMouseMove(event){
+          if (!isMouseBtnDown || navStep > 1) return true;
+
+          let isClose = false;
+          // Release happened in the expected side of the screen
+          Object.keys(targets).forEach((key) => {
+            const dist = sceneMngr_Equi.mouse.distanceTo(targets[key]) < .1;
+            if (dist) {
+              isClose = true;
+              return;
+            }
+          });
+
+          if (isClose) {
+            sceneMngr_Equi.setScene("./res/instruct/navigateEquirect_4.png");
+          } else {
+            sceneMngr_Equi.setScene(`./res/instruct/navigateEquirect_${navStep?3:2}.png`);
+          }
+        }
+
+        // TODO - fix shouldn't increment navStep if mouse out of target
+
+        sceneMngr_Equi.renderer.domElement.addEventListener('mousedown', checkMouseDown);
+        sceneMngr_Equi.renderer.domElement.addEventListener('mousemove', checkMouseMove);
+        sceneMngr_Equi.renderer.domElement.addEventListener('mouseup', checkMouseRelease);
+        sceneMngr_Equi.renderer.domElement.addEventListener('mouseleave', checkMouseRelease);
+
+      })
+      .waitUntil(() => { return waituntil_flag; })
+      .waitUntil(() => { return inputMngr.Keys[32]; })
+      .lambda(() => {
+        sceneMngr_VP.interactive = false;
+        sceneMngr_Equi.mouse.x = .5;
+        sceneMngr_Equi.mouse.y = .5;
+        sceneMngr_Equi.moveViewportBorder();
+        sceneMngr_Equi.setScene("./res/instruct/navigateEquirect_VPtarget1.png");
+        sceneMngr_VP.setScene("./res/instruct/navigateEquirect_VPtarget1.png");
+      })
+      .waitUntil(() => {
+        return sceneMngr_Equi.isSceneSet && sceneMngr_VP.isSceneSet;
+      })
+      .lambda(() => {
+
+        $("#cont-ObjView > #vid-name").html(localise.get("practice.content3"));
+
+        waituntil_flag = false;
+
+        let nTarget = 0;
+        function checkMouseDown (e){
+          if (nTarget > 1) return true;
+          
+          // Is mouse inside the rectangle in sphere space?
+          const mousePosInVP = sceneMngr_VP.mouse;
+          const mousePosOnSph = sceneMngr_VP.VPpoint2EquirectConvert(mousePosInVP);
+          const targets = [ {"x":.101, "y": .529}, {"x":.795, "y": .5} ];
+
+          const dist = sceneMngr_Equi.ComputeOrthodromicDistance(mousePosOnSph, targets[nTarget]);
+          const dist_thresh = .027;
+          const isInside = dist<dist_thresh;
+
+          if (isInside) {
+            nTarget += isInside;
+
+            if (nTarget == 1) {
+              sceneMngr_Equi.setScene("./res/instruct/navigateEquirect_VPtarget2.png");
+              sceneMngr_VP.setScene("./res/instruct/navigateEquirect_VPtarget2.png");
+            } else {
+              sceneMngr_Equi.setScene("./res/instruct/navigateEquirect_5.png");
+              sceneMngr_VP.setScene("./res/instruct/navigateEquirect_5.png");
+
+              sceneMngr_Equi.renderer.domElement.removeEventListener('mousedown', checkMouseDown);
+
+              waituntil_flag = true;
+            }
+          }
+
+          const modalData = new ModalData(null,
+            isInside?localise.get("practice.clicksuccess"):localise.get("practice.clickfail"),
+            [isInside?localise.get("btn.cont"):localise.get("btn.retry")],
+            null);
+          const modal = new Modal(modalData);
+
+          $("#DotValid").show()
+                  .css("top", `${sceneMngr_VP.mouseWin.y-10}px`)
+                  .css("left", `${sceneMngr_VP.mouseWin.x-10}px`);
+          modal.build().show({my: "left", at: "right", of: "#DotValid"});
+          $("#DotValid").hide();
+
+          sceneMngr_Equi.ToggleActive(false);
+          sceneMngr_VP.ToggleActive(false);
+          sceneMngr_Equi.render();
+          sceneMngr_VP.render();
+          }
+
+        sceneMngr_VP.renderer.domElement.addEventListener('mousedown', checkMouseDown);
+      })
+      .waitUntil(() => { return waituntil_flag; })
+      .waitUntil(() => { return inputMngr.Keys[32]; })
+      .waitForAnswer(new ModalData(
+        localise.get("expedesc.title"),
+        localise.get("expedesc.repeat", [localise.get("btn.cont")]),
+        [localise.get("btn.cont")]));
+
+    const trial_procedure = new Trial("procedure")
+      .lambda(() => {
+        sceneMngr_VP.interactive = true;
+        sceneMngr_VP.showImgLoadingTexture = true;
+
+        $("#cont-cont").show();
+        $("#cont-ObjView > video").show();
+        // Hiding the container div makes it small in firefox
+        window.dispatchEvent(new Event('resize'));
+
+        const StimMng = experiment.currentStimuliMngr;
+        dataMngr.start_record(StimMng.currentIndex,
+                      StimMng.currentSceneObjectName.replace(" ", "_") + "-" +
+                      StimMng.currentSceneName + "-scene");
+
+        // Update cont-Info (or remove it, leave it for debugging)
+
+        $("#cont-Info").text(`Scene: ${StimMng.currentSceneName} (${StimMng._index+1}/${StimMng.length})`);
+
+        dataMngr.write(`scene: ${StimMng.currentScenePath}`);
+        dataMngr.write(`object: ${StimMng.currentSceneObjectPath}`);
+
+        sceneMngr_Equi.setScene(StimMng.currentScenePath);
+        sceneMngr_VP.setScene(StimMng.currentScenePath);
+
+        $("#cont-ObjView > video").attr("src", StimMng.currentSceneObjectPath);
+        $("#cont-ObjView > #vid-name").text(StimMng.currentSceneObjectName);
+
+        sceneMngr_Equi.ToggleActive(true);
+        sceneMngr_VP.ToggleActive(true);
+      },
+      "set scene" )
+      .waitUntil(() => {
+        return sceneMngr_Equi.isSceneSet && sceneMngr_VP.isSceneSet;
+      })
+      .lambda(() => {
+        sceneMngr_Equi.render();
+        sceneMngr_VP.render();
+      })
+      // .waitUntil(() => { return inputMngr.Keys[32]; }) // Demo to display stim without interaction
+      .waitUntil(() => { return $("#DotValid").prop("class") === "used";} )
+      .lambda(() => {
+        $("#DotValid").removeClass("used");
+      })
+      .waitForAnswer(
+        new ModalData(localise.get("question.title", 1,3), localise.get("question1"),
+          [localise.get("btn.inside"), localise.get("btn.outside")])
+      )
+      .waitForAnswer(
+        new Questionnaire.DiscreteScaleNumKeyAnswer(
+        localise.get("question2"),
+          "inout_2",
+          [0, 9],
+          0,
+          [localise.get("btn.inside"), localise.get("btn.outside")],
+          null,
+          "Answer with the slider below"
+        )
+        .asModalData(localise.get("question.title", 2,3),
+        () => {
+          let scene_type = experiment.currentStimuliMngr.currentSceneType;
+          if (expe_info["lang"] !== "en"){
+            const scene_type_abbr = localise.get(scene_type);
+            const local_scene_type = localise.get(scene_type_abbr, "bb");
+            if (local_scene_type !== null) {
+              scene_type = local_scene_type;
+            } else {
+              scene_type = scene_type_abbr;
+            }
+          }
+          
+          $("#fill-object").text(experiment.currentStimuliMngr.currentSceneObjectName);
+          $("#fill-scene-type").text(scene_type);
+        },)
+      )
+      .waitForAnswer(
+        new Questionnaire.DiscreteScaleNumKeyAnswer(
+          localise.get("question3"),
+          "inout_3",
+          [0, 9],
+          0,
+          [localise.get("btn.slide0"), localise.get("btn.slide1")],
+          null,
+          "Answer with the slider below"
+        )
+        .asModalData(localise.get("question.title", 3,3),
+        () => {
+          let scene_type = experiment.currentStimuliMngr.currentSceneType;
+          if (expe_info["lang"] !== "en"){
+            const scene_type_abbr = localise.get(scene_type);
+            const local_scene_type = localise.get(scene_type_abbr, "bb");
+            if (local_scene_type !== null) {
+              scene_type = local_scene_type;
+            } else {
+              scene_type = scene_type_abbr;
+            }
+          }
+
+          $("#fill-object").text(experiment.currentStimuliMngr.currentSceneObjectName);
+          $("#fill-scene-type").text(scene_type);
+        },)
+      )
+      .lambda(() => {
+          dataMngr.stop_record();
+      })
+      .wait(0) // Inter-trial break of 1 sec.
+      .break_every(40) // Supplementary option
+      .break_duration(20) // Break ends after n sec.
+      .break_until(() => { return inputMngr.Keys[32]; }) // Stop break on Space key press
+      .break_modal(true) // Force minimum resting period - TODO check
+      .break_modal(new ModalData(
+        localise.get("break.title"),
+        localise.get("break.content", localise.get("btn.cont")),
+        [localise.get("btn.cont")]));
+
+    const trial_end = new Trial("Ending")
+      .waitForAnswer(new ModalData(
+        localise.get("end.title"),
+        () => {
+          windowFunc.exitFullscreen();
+          dataMngr.stop_record(); // If any is still on
+
+          // setTimeout(()=>{
+          //   dataMngr.export(experiment.shortname);
+          // }, 1000);
+
+          function succeededSending(resp){
+            $("p#savedata")
+              .css("color", "#056f1a")
+              .css("font-weight", "bold")
+              .html(localise.get("end.save.success"));
+              // (response: \"" + resp +"\", status: " + status + ")");
+          }
+          function failedSending(resp, err){
+            $("p#savedata")
+              .css("color", "#a80000")
+              .css("font-weight", "bold")
+              .html(localise.get("end.save.fail", UUID, resp));
+          }
+
+          console.warn(Date.now().toString() + "_" + UUID)
+
+          setTimeout(()=>{
+            $("button#savedata").on("click", () => {
+              dataMngr.export(experiment.shortname);
+              });
+
+            $.ajax({
+              type: "POST",
+              url: "receive.php",
+              dataType: "json",
+              data: {filename: Date.now().toString() + "_" + UUID + "_" + expe_info["isubj"],
+                     filedata: dataMngr.get(true),
+                    },
+              // dataType: 'application/json'
+            })
+            .done((data, err) => {
+              if (data != "Succcess"){
+                failedSending(data);
+              } else {
+                succeededSending(data);
+              }
+            })
+            .fail((data) => {
+              failedSending(data);
+            });
+
+            if (expe_info["SONA"] !== "") {
+              // TODO - FILL/REPLACE SONA link
+              const url = "https://uni-frankfurt.sona-systems.com/webstudy_credit.aspx?experiment_id=439&credit_token=07855d85ebfc4416b2c390b02067594f&survey_code=" + expe_info["SONA"];
+              window.open(url, '_blank');
+            }
+
+          }, 50);
+
+          const content = localise.get("end.content", UUID, UUID);
+
+          return content;
+        },
+        []));
+
+    const experiment = new Experiment("Objet placement", "Jony_SGL");
+
+    if (!!!expe_info["spe"]){
+      // Build experiment
+      experiment
+        .trial(trial_preexpe, null)
+        .trial(trial_checks, null)
+        .trial(trial_instruct_show, null)
+        .trial(trial_instruct_do, null)
+        .trial(trial_procedure, stimuliMngr)
+        .trial(trial_end, null);
+    } else {
+      switch (expe_info["spe"]){
+        case 0:
+          experiment.trial(trial_preexpe, null);
+          break;
+        case 1:
+          experiment.trial(trial_checks, null);
+          break;
+        case 2:
+          experiment.trial(trial_instruct_show, null);
+          break;
+        case 3:
+          experiment.trial(trial_instruct_do, null);
+          break;
+        case 4:
+          experiment.trial(trial_procedure, stimuliMngr)
+          break;
+        // case 3:
+        //   experiment
+        //     .trial(getPreQuestionnaire(), null) // Pre-exep form
+        //     .trial(getMRT(), null); // MRT
+        //   break;
+      }
+      experiment.trial(trial_end, null);
+    }
+
+    experiment.start(); // Start experiment
+  }
+
+  // Some modules load data asynchronously in their ctor
+  //  We wait until they are all finished to start the protocol
+  const waitfor = [
+    () => {return stimuliMngr.isReady;},
+    () => {return sceneMngr_Equi.isReady;},
+    () => {return trialData.isReady;},
+    () => {return localise.isReady;}
+  ];
+
+  $(function() {
+    // called when page is loaded
+
+    const starting = setInterval( () => {
+      // wait till all async tasks are finished
+      for (let iAsync = 0; iAsync < waitfor.length; iAsync++){
+        if (!waitfor[iAsync]()){
+          return;
+        }
+      }
+      clearInterval(starting);
+      main();
+    }, 50);
+  });
+
+</script>
+
+</body>
+</html>
