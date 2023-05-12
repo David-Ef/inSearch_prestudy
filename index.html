@@ -662,7 +662,7 @@ import * as Questionnaire from "./src/Questionnaire.js";
           dataMngr.stop_record();
       })
       .wait(0) // Inter-trial break of 1 sec.
-      .break_every(40) // Supplementary option
+      .break_every(20) // Supplementary option
       .break_duration(20) // Break ends after n sec.
       .break_until(() => { return inputMngr.Keys[32]; }) // Stop break on Space key press
       .break_modal(true) // Force minimum resting period - TODO check
