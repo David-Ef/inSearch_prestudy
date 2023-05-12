@@ -42,7 +42,7 @@
 /**
  * @author Erwan David <David@psych.uni-frankfurt.de>
  * @lab SGL, Goethe University, Frankfurt
- * @year 2022
+ * @year 2023
  * @comment 
  */
 
@@ -71,20 +71,18 @@ import * as Questionnaire from "./src/Questionnaire.js";
   // Expe info
   const url = new URL(window.location.href);
   const expe_info = {
-    // Number of trials
-    "n_stim": parseInt(url.searchParams.get("ns")) || 160,
-    // Task 1: scene display time
-    "trial_duration": parseInt(url.searchParams.get("td")) || 7,
     // Localisation
-    "lang": url.searchParams.get("lang") || "en",
+    "lang": url.searchParams.get("lang") || "de",
     // Print debug info in the console, along with all trial data recording
     "debug": url.searchParams.get("debug")==1,
     // Go straight to a specific part of the experiment
-    "spe": parseInt(url.searchParams.get("spe"))
+    "spe": parseInt(url.searchParams.get("spe")),
+    // Subject number
+    "isubj": parseInt(url.searchParams.get("isubj"))
   }
 
   if (expe_info["isubj"] < 0 || isNaN(expe_info["isubj"]) ){
-    expe_info["isubj"] = Math.floor(Math.random() * 150)
+    expe_info["isubj"] = Math.floor(Math.random() * 40)
   }
 
   // The playlist file contains 150 playlists
@@ -132,7 +130,7 @@ import * as Questionnaire from "./src/Questionnaire.js";
     $("#cont-cont").hide();
 
     trialData.setPlaylist(expe_info["isubj"]);
-    stimuliMngr.stim_order = trialData.playlist.slice(0, expe_info["n_stim"]);
+    stimuliMngr.stim_order = trialData.playlist; //.slice(0, expe_info["n_stim"]);
 
     sceneMngr_Equi.VP_scene = sceneMngr_VP;
     sceneMngr_VP.Equi_scene = sceneMngr_Equi;
@@ -475,6 +473,8 @@ import * as Questionnaire from "./src/Questionnaire.js";
           }
         }
 
+        // TODO - fix shouldn't increment navStep if mouse out of target
+
         sceneMngr_Equi.renderer.domElement.addEventListener('mousedown', checkMouseDown);
         sceneMngr_Equi.renderer.domElement.addEventListener('mousemove', checkMouseMove);
         sceneMngr_Equi.renderer.domElement.addEventListener('mouseup', checkMouseRelease);
@@ -595,6 +595,7 @@ import * as Questionnaire from "./src/Questionnaire.js";
         sceneMngr_Equi.render();
         sceneMngr_VP.render();
       })
+      // .waitUntil(() => { return inputMngr.Keys[32]; }) // Demo to display stim without interaction
       .waitUntil(() => { return $("#DotValid").prop("class") === "used";} )
       .lambda(() => {
         $("#DotValid").removeClass("used");
@@ -625,6 +626,8 @@ import * as Questionnaire from "./src/Questionnaire.js";
               scene_type = scene_type_abbr;
             }
           }
+          
+          $("#fill-object").text(experiment.currentStimuliMngr.currentSceneObjectName);
           $("#fill-scene-type").text(scene_type);
         },)
       )
@@ -650,6 +653,8 @@ import * as Questionnaire from "./src/Questionnaire.js";
               scene_type = scene_type_abbr;
             }
           }
+
+          $("#fill-object").text(experiment.currentStimuliMngr.currentSceneObjectName);
           $("#fill-scene-type").text(scene_type);
         },)
       )
@@ -660,6 +665,7 @@ import * as Questionnaire from "./src/Questionnaire.js";
       .break_every(40) // Supplementary option
       .break_duration(20) // Break ends after n sec.
       .break_until(() => { return inputMngr.Keys[32]; }) // Stop break on Space key press
+      .break_modal(true) // Force minimum resting period - TODO check
       .break_modal(new ModalData(
         localise.get("break.title"),
         localise.get("break.content", localise.get("btn.cont")),
@@ -718,7 +724,8 @@ import * as Questionnaire from "./src/Questionnaire.js";
             });
 
             if (expe_info["SONA"] !== "") {
-              const url = "Used to contain SONA callback link";
+              // TODO - FILL/REPLACE SONA link
+              const url = "https://uni-frankfurt.sona-systems.com/webstudy_credit.aspx?experiment_id=439&credit_token=07855d85ebfc4416b2c390b02067594f&survey_code=" + expe_info["SONA"];
               window.open(url, '_blank');
             }
 
@@ -758,6 +765,11 @@ import * as Questionnaire from "./src/Questionnaire.js";
         case 4:
           experiment.trial(trial_procedure, stimuliMngr)
           break;
+        // case 3:
+        //   experiment
+        //     .trial(getPreQuestionnaire(), null) // Pre-exep form
+        //     .trial(getMRT(), null); // MRT
+        //   break;
       }
       experiment.trial(trial_end, null);
     }

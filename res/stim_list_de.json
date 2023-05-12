@@ -1,59 +1,38 @@
 {
-	"stim_list":
-	[
-		[
-			"bedroom",
-			{
-				"alarm_clock": "Wecker",
-				"sleep_mask": "Schlafmaske",
-				"reading_glasses": "Lesebrille",
-				"medication": "Medikamente",
-				"hand_lotion": "Handcreme",
-				"pants": "Hose",
-				"belt": "Gürtel",
-				"bandaid": "Pflaster",
-				"phone_charger": "Handy Ladekabel",
-				"pocket_knife": "Taschenmesser",
-				"passport": "Reisepass"
-			}
-		],
-		[
-			"kitchen",
-			{
-				"measuring_cups": "Messbecher-Cups",
-				"ice_cream_scoop": "Eisportionierer",
-				"tupperware": "Tupperware-Box"
-			}
-		],
-		[
-			"livingroom",
-			{
-				"candles": "Kerze",
-				"game_controller": "Spiel-Controller",
-				"card_game": "Kartenspiel",
-				"vr_headset": "Virtual Reality Brille",
-				"shoe_polish": "Schuhcreme",
-				"umbrella": "Regenschirm",
-				"rubikscube": "Rubik's Cube",
-				"screwdriver": "Schreubenzieher",
-				"dollar_stack": "Geldscheine"
-			}
-		],
-		[
-			"office",
-			{
-				"business_card_holder": "Visitenkartenhalter",
-				"sticky_notes": "Haftnotizen",
-				"whiteboard_markers": "Whiteboard-Marker",
-				"printer_cartidges": "Druckerpatronen",
-				"extension_cords": "Verlängerungskabel",
-				"tape_dispenser": "Tesafilm",
-				"batteries": "Batterien",
-				"sketchbook": "Notizbuch",
-				"earplugs": "In-Ear Kopfhörer",
-				"flashlight": "Taschenlampe",
-				"laptop": "Laptop"
-			}
-		]
-	]
+  "stim_list": {
+    "alarm_clock": "Wecker",
+    "bandaid": "Pflaster",
+    "battery": "Batterie",
+    "belt": "Gürtel",
+    "business_card_holder": "Visitenkartenhalter",
+    "candles": "Kerze",
+    "card_game": "Kartenspiel",
+    "dollar_stack": "Geldscheine",
+    "earphones": "In-Ear Kopfhörer",
+    "extension_cords": "Verlängerungskabel",
+    "flashlight": "Taschenlampe",
+    "game_controller": "Spiel-Controller",
+    "hand_lotion": "Handcreme",
+    "ice_cream_scoop": "Eisportionierer",
+    "laptop": "Laptop",
+    "measuring_cups": "Messbecher-Cups",
+    "medication": "Medikamente",
+    "pants": "Hose",
+    "passport": "Reisepass",
+    "phone_charger": "Handy Ladekabel",
+    "pocket_knife": "Taschenmesser",
+    "printer_cartridges": "Druckerpatronen",
+    "reading_glasses": "Lesebrille",
+    "rubikscube": "Rubik's Cube",
+    "screwdriver": "Schreubenzieher",
+    "shoe_polish": "Schuhcreme",
+    "sketchbook": "Notizbuch",
+    "sleep_mask": "Schlafmaske",
+    "sticky_notes": "Haftnotizen",
+    "tape_dispenser": "Tesafilm",
+    "tupperware": "Tupperware-Box",
+    "umbrella": "Regenschirm",
+    "vr_headset": "Virtual Reality Brille",
+    "whiteboard_markers": "Whiteboard-Marker"
+  }
 }
