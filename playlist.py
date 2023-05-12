@@ -43,7 +43,7 @@ for i_subj in range(n_playlists // 2 ):
 
 		n_obj = obj_pl.shape[0]
 
-		# np.random.shuffle(obj_pl)
+		np.random.shuffle(obj_pl)
 
 		# Add i_o and i_s
 		tmp_1 = np.concatenate([
@@ -61,8 +61,8 @@ for i_subj in range(n_playlists // 2 ):
 		pl_user2 = np.concatenate([pl_user2, tmp_2], axis=0)
 
 	# shuffle playlist so scenes are shuffled too
-	# np.random.shuffle(pl_user1)
-	# np.random.shuffle(pl_user2)
+	np.random.shuffle(pl_user1)
+	np.random.shuffle(pl_user2)
 	
 	playlists = np.concatenate([playlists, pl_user1[None,:,:]], axis=0)
 	playlists = np.concatenate([playlists, pl_user2[None,:,:]], axis=0)
