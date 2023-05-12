@@ -64,7 +64,7 @@
 	"question1": "Do you want to place the object inside or outside of the marked position?",
 	"question2": "In general, would you expect to find a <span id=\"object\"></span> more inside or outside in a <span id=\"fill-scene-type\"></span>?",
 	"question3": "Would you say that a <span id=\"object\"></span> belongs in a <span id=\"fill-scene-type\"></span>?",
-	"reminder.title": "Important Reminder!",
+	"reminder.title": "<b>Important Reminder!</b>",
 	"reminder.content": "Please make sure to determine the position of the objects correctly according to the following questions.<br/><br/>After you have confirmed the position, please specify whether the object should be placed <b>inside</b> (e.g., in a drawer or in the closet) or <b>outside</b> (e.g., on a table, in a shelf, or on the kitchen counter).<br/><br/>This step is very important to us and to the accuracy of the data.",
 	"break.title": "Break",
 	"break.content": "Take a minute to rest.<br /><br /> Press \"${}\" when you are ready to resume the experiment.",
