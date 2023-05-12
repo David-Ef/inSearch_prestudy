@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html><head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
@@ -72,8 +71,6 @@ import * as Questionnaire from "./src/Questionnaire.js";
   // Expe info
   const url = new URL(window.location.href);
   const expe_info = {
-    // Number of trials
-    "n_stim": parseInt(url.searchParams.get("ns")) || 136,
     // Localisation
     "lang": url.searchParams.get("lang") || "de",
     // Print debug info in the console, along with all trial data recording
@@ -133,7 +130,7 @@ import * as Questionnaire from "./src/Questionnaire.js";
     $("#cont-cont").hide();
 
     trialData.setPlaylist(expe_info["isubj"]);
-    stimuliMngr.stim_order = trialData.playlist.slice(0, expe_info["n_stim"]);
+    stimuliMngr.stim_order = trialData.playlist; //.slice(0, expe_info["n_stim"]);
 
     sceneMngr_Equi.VP_scene = sceneMngr_VP;
     sceneMngr_VP.Equi_scene = sceneMngr_Equi;
