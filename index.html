@@ -66,8 +66,6 @@ import * as Questionnaire from "./src/Questionnaire.js";
 
   // GENERAL/MISC ###############
 
-  let UUID = uuidv4();
-
   // Expe info
   const url = new URL(window.location.href);
   const expe_info = {
@@ -86,9 +84,10 @@ import * as Questionnaire from "./src/Questionnaire.js";
   }
 
   // The playlist file contains 150 playlists
-  expe_info["isubj"] = expe_info["isubj"] % 150;
+  expe_info["isubj"] = expe_info["isubj"] % 40;
 
-  expe_info["SONA"] = url.searchParams.get("SONA") || "";
+  expe_info["SubjectID"] = url.searchParams.get("PROLIFIC_PID") || "";
+  let UUID = expe_info["SubjectID"];
 
   const debug = new DebugInfo();
   debug.enabled = expe_info["debug"]
@@ -255,7 +254,7 @@ import * as Questionnaire from "./src/Questionnaire.js";
               }
               setButtonEnabled(false);
 
-              const selector = "input#UUID, input#EXPRA_CODE, select#sex, input#age, input#resid, input#dist2screen, input#screenW, input#screenH, input#UserAgent, input#screenWpix, input#screenHpix";
+              const selector = "input#UUID, select#sex, input#age, input#resid, input#dist2screen, input#screenW, input#screenH, input#UserAgent, input#screenWpix, input#screenHpix";
 
               $(`button:contains(\"${localise.get("btn.cont")}\")`).off().on("click", () => {
                   // event.stopPropagation();
@@ -268,7 +267,7 @@ import * as Questionnaire from "./src/Questionnaire.js";
                   });
 
                   dataMngr.write("iSubj=" + expe_info["isubj"]);
-                  dataMngr.write("SONA=" + expe_info["SONA"]);
+                  dataMngr.write("SubjectID=" + expe_info["SubjectID"]);
 
                   modal.close();
               });
@@ -723,11 +722,8 @@ import * as Questionnaire from "./src/Questionnaire.js";
               failedSending(data);
             });
 
-            if (expe_info["SONA"] !== "") {
-              // TODO - FILL/REPLACE SONA link
-              const url = "https://uni-frankfurt.sona-systems.com/webstudy_credit.aspx?experiment_id=439&credit_token=07855d85ebfc4416b2c390b02067594f&survey_code=" + expe_info["SONA"];
-              window.open(url, '_blank');
-            }
+            const url = "https://app.prolific.co/submissions/complete?cc=CPSJ0Q9Z";
+            window.open(url, '_blank');
 
           }, 50);
 
