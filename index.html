@@ -1,3 +1,13 @@
+<?php
+session_start();
+
+if (!(array_key_exists('hash', $_SESSION))) {
+  $rand = md5(mt_rand());
+  $hash = sha1($rand);
+  $_SESSION["hash"] = $hash;
+}
+?>
+
 <!DOCTYPE html>
 <html><head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
@@ -76,7 +86,7 @@ import * as Questionnaire from "./src/Questionnaire.js";
     // Go straight to a specific part of the experiment
     "spe": parseInt(url.searchParams.get("spe")),
     // Subject number
-    "isubj": parseInt(url.searchParams.get("isubj"))
+    "isubj": parseInt(url.searchParams.get("s"))
   }
 
   if (expe_info["isubj"] < 0 || isNaN(expe_info["isubj"]) ){
@@ -125,6 +135,19 @@ import * as Questionnaire from "./src/Questionnaire.js";
 
   function main(){
 
+    function saveProgress(tag){
+      $.ajax({
+        type: "POST",
+        url: "progress.php",
+        dataType: "json",
+        data: {filename: Date.now().toString() + "_" + UUID + "_" + expe_info["isubj"],
+               tag: tag,
+              },
+      })
+      .done((data, err) => { })
+      .fail((data) => { });
+    }
+
     $("#wait-loading").remove();
     $("#cont-cont").hide();
 
@@ -171,6 +194,8 @@ import * as Questionnaire from "./src/Questionnaire.js";
       sceneMngr_VP.render();
     };
 
+    // Protocol
+
     const trial_preexpe = new Trial("Pre-expe modals")
       .waitForAnswer(new ModalData(
         localise.get("expedesc.title"),
@@ -189,11 +214,15 @@ import * as Questionnaire from "./src/Questionnaire.js";
           if (Modal.last_answer === localise.get("btn.rejt")){
             window.location = "https://uni-frankfurt.de";
 
+            saveProgress("rejected consent form");
+
             setTimeout(()=>{ $("button:contains(\"auto\")").remove(); }, 50);
             return localise.get("consent.redir");
           }
           else {
             modal.data.to_close = true;
+
+            saveProgress("accepted consent form");
             return "";
           }
         },
@@ -270,6 +299,8 @@ import * as Questionnaire from "./src/Questionnaire.js";
                   dataMngr.write("SubjectID=" + expe_info["SubjectID"]);
 
                   modal.close();
+
+                  saveProgress("recorded subj data");
               });
 
               $(selector)
@@ -352,6 +383,7 @@ import * as Questionnaire from "./src/Questionnaire.js";
         }))
       .lambda(() => {
         dataMngr.stop_record();
+        saveProgress("prechecks passed");
       });
 
     const trial_instruct_show = new Trial("Describe UI")
@@ -378,7 +410,10 @@ import * as Questionnaire from "./src/Questionnaire.js";
         localise.get("instruct.describe4"),
         [localise.get("btn.cont")], null, $(document).width()*.9, () => {
           $(".ui-dialog.ui-corner-all.ui-widget").css( { top: 10 });
-      }));
+      }))
+      .lambda(() => {
+        saveProgress("UI description passed");
+      });
 
     const trial_instruct_do = new Trial("Practice UI")
       .waitForAnswer(new ModalData(
@@ -553,7 +588,10 @@ import * as Questionnaire from "./src/Questionnaire.js";
       .waitForAnswer(new ModalData(
         localise.get("expedesc.title"),
         localise.get("expedesc.repeat", [localise.get("btn.cont")]),
-        [localise.get("btn.cont")]));
+        [localise.get("btn.cont")]))
+      .lambda(() => {
+        saveProgress("UI practice passed");
+      });
 
     const trial_procedure = new Trial("procedure")
       .lambda(() => {
@@ -659,6 +697,7 @@ import * as Questionnaire from "./src/Questionnaire.js";
       )
       .lambda(() => {
           dataMngr.stop_record();
+          saveProgress(`Finished trial ${experiment.currentStimuliMngr.currentIndex}`);
       })
       .wait(0) // Inter-trial break of 1 sec.
       .break_every(20) // Supplementary option
@@ -674,6 +713,7 @@ import * as Questionnaire from "./src/Questionnaire.js";
       .waitForAnswer(new ModalData(
         localise.get("end.title"),
         () => {
+          saveProgress("Just before saving data to server");
           windowFunc.exitFullscreen();
           dataMngr.stop_record(); // If any is still on
 
@@ -686,13 +726,16 @@ import * as Questionnaire from "./src/Questionnaire.js";
               .css("color", "#056f1a")
               .css("font-weight", "bold")
               .html(localise.get("end.save.success"));
-              // (response: \"" + resp +"\", status: " + status + ")");
+
+              saveProgress("Success saving data to server");
           }
           function failedSending(resp, err){
             $("p#savedata")
               .css("color", "#a80000")
               .css("font-weight", "bold")
               .html(localise.get("end.save.fail", UUID, resp));
+
+              saveProgress("Error saving data to server: " + err);
           }
 
           console.warn(Date.now().toString() + "_" + UUID)
